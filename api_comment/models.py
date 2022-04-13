@@ -26,9 +26,12 @@ class Comment(models.Model):
     author = models.CharField('Автор комментария', max_length=50)
     text = models.CharField('Текст поста', max_length=120)
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-    parent = models.ForeignKey('Comment', on_delete=models.CASCADE, verbose_name='Комментарий', related_name='answers', blank=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='Комментарий', related_name='answers', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
         ordering = ['pub_date']
+    
+    def children(self):
+        return Comment.objects.filter(parent=self)
