@@ -1,5 +1,7 @@
 from django.db import models
 
+from mptt.models import MPTTModel, TreeForeignKey
+
 
 class Article(models.Model):
     '''
@@ -17,21 +19,30 @@ class Article(models.Model):
         ordering = ['pub_date']
 
 
-class Comment(models.Model):
+class Comment(MPTTModel):
     '''
     Модель комментария
     '''
 
-    article = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name='Статья', related_name='comments')
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        verbose_name='Статья',
+        related_name='comments')
     author = models.CharField('Автор комментария', max_length=50)
     text = models.CharField('Текст поста', max_length=120)
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, verbose_name='Комментарий', related_name='answers', null=True, blank=True)
+    parent = TreeForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        verbose_name='Комментарий',
+        related_name='answers',
+        null=True, blank=True)
 
-    class Meta:
+    class MPTTMeta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        ordering = ['pub_date']
-    
+        order_insertion_by = ['pub_date']
+
     def children(self):
         return Comment.objects.filter(parent=self)
