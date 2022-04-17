@@ -14,7 +14,8 @@ from .serializers import (ArticleSerializer, Comment3rdLevelSerializer,
 
 class ArticleViewSet(GenericViewSet, CreateModelMixin, ListModelMixin):
     '''
-    Вьюсет для статей
+    GET запрос возвращает список статей.
+    POST запрос создает статью. Требуемые поля author и text.
     '''
     queryset = Article.objects.annotate(comments_count=Count('comments'))
     serializer_class = ArticleSerializer
@@ -30,7 +31,12 @@ class ArticleViewSet(GenericViewSet, CreateModelMixin, ListModelMixin):
 
 class CommentViewSet(GenericViewSet, ListModelMixin):
     '''
-    Вьюсет для комментариев
+    GET запрос с указанием ID статьи вернет все комментарии для статьи
+    до 3 уровня вложенности.
+    POST запрос add_answer создает комментарий в ответ на комментарий.
+    Требуемые поля author и text.
+    POST запрос add_comment создает комментарий к статье.
+    Требуемые поля author и text.
     '''
     serializer_class = CommentsSerialzier
 
@@ -56,7 +62,7 @@ class CommentViewSet(GenericViewSet, ListModelMixin):
 
 class Comment3rdLvlViewSet(GenericViewSet, ListModelMixin):
     '''
-    Вьюсет для комментария 3 уровня
+    GET запрос all_comments вернет все комментарии для комментария 3 уровня
     '''
     serializer_class = Comment3rdLevelSerializer
 
