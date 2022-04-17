@@ -1,0 +1,49 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres:14.2-alpine
+    volumes:
+      - db_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: comment
+      POSTGRES_USER: comment
+      POSTGRES_PASSWORD: comment
+    container_name: db
+    networks:
+      - djangonetwork
+
+  web:
+    build: ../.
+    volumes:
+      - static_value:/app/static/
+      - media_value:/app/media/
+    depends_on:
+      - db
+    links:
+      - db:db
+    networks:
+      - djangonetwork
+    env_file:
+      - ../.env
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    networks:
+      - djangonetwork
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - static_value:/var/html/static/
+      - media_value:/var/html/media/
+    depends_on:
+      - web
+
+networks:
+  djangonetwork:
+
+volumes:
+  static_value:
+  media_value:
+  db_data:
