@@ -45,4 +45,6 @@ class ArticleSerializer(serializers.ModelSerializer):
         fields = ('id', 'author', 'text', 'pub_date', 'comments')
 
     def get_comments(self, obj: Article):
-        return obj.comments_count
+        if hasattr(obj, 'comments_count'):
+            return obj.comments_count
+        return 0
