@@ -31,3 +31,5 @@
  `docker-compose up -d`
  ##### Выполните миграции
 ` docker-compose exec web python manage.py migrate`
+##### Соберите статику
+` docker-compose exec web python manage.py collectstatic`
